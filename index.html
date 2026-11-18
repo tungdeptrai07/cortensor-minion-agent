@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CortensorOps Copilot | OpenMinion 0.1.23 DePIN Node Auditor</title>
+  <style>
+    :root { --bg:#070b14; --card:#101726; --border:#1e2d47; --accent:#10b981; --cyan:#38bdf8; --text:#f1f5f9; --muted:#94a3b8; }
+    * { box-sizing:border-box; margin:0; padding:0; font-family:'Inter',system-ui,sans-serif; }
+    body { background:var(--bg); color:var(--text); padding:28px; line-height:1.6; }
+    .wrap { max-width:1100px; margin:0 auto; }
+    .hero { background:linear-gradient(135deg,#0f172a,#111c33); border:1px solid var(--border); border-radius:16px; padding:26px; margin-bottom:22px; }
+    .badge { display:inline-block; padding:4px 11px; border-radius:99px; font-size:12px; font-weight:700; background:rgba(16,185,129,0.15); color:var(--accent); border:1px solid rgba(16,185,129,0.35); margin-bottom:10px; }
+    h1 { font-size:26px; margin-bottom:8px; }
+    p.sub { color:var(--muted); font-size:14px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:18px; margin-bottom:22px; }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:20px; }
+    .card h2 { font-size:16px; margin-bottom:10px; color:var(--cyan); }
+    pre { background:#050811; border:1px solid var(--border); border-radius:10px; padding:14px; font-family:Consolas,monospace; font-size:12px; color:#a7f3d0; overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; font-size:13px; margin-top:8px; }
+    th, td { text-align:left; padding:10px; border-bottom:1px solid var(--border); }
+    th { color:var(--muted); font-size:11.5px; text-transform:uppercase; }
+    .btn { display:inline-block; background:var(--accent); color:#051b11; font-weight:700; padding:9px 16px; border-radius:9px; text-decoration:none; font-size:13px; margin-top:12px; cursor:pointer; border:none; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <span class="badge">Cortensor Hackathon #5 &bull; OpenMinion SDK v0.1.23</span>
+    <h1>CortensorOps Copilot — DePIN Node &amp; Inference Audit Agent</h1>
+    <p class="sub">Local-first autonomous agent built on <code>openminion</code> 0.1.23 Python SDK featuring READ_ONLY &amp; write policy gates, Pydantic output validation, and SQLite session continuity.</p>
+    <a class="btn" href="https://github.com/tungdeptrai07/cortensor-minion-agent">View Source on GitHub</a>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Turn 1: Node Inspection + Pydantic Validation</h2>
+      <pre>{
+  "node_id": "miner-sol-gpu-042",
+  "health_status": "HEALTHY",
+  "poi_verified": true,
+  "vram_utilization_pct": 68.4,
+  "summary": "Node miner-sol-gpu-042 passed Cortensor PoI &amp; latency audit."
+}</pre>
+    </div>
+    <div class="card">
+      <h2>Turn 2: Policy Gate &amp; Unittest Proof (4/4 Passed)</h2>
+      <pre>[Policy Gate] Approving write tool 'archive_audit_receipt'
+-> Saved audit_logs/miner-sol-gpu-042_receipt.json
+-------------------------------------------------------
+python -m unittest discover -s tests -v
+Ran 4 tests in 5.791s -> OK (Exit Code 0)</pre>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:22px;">
+    <h2>Building Blocks Tested (OpenMinion 0.1.23)</h2>
+    <table>
+      <thead><tr><th>Building Block</th><th>Implementation</th><th>Verified Outcome</th></tr></thead>
+      <tbody>
+        <tr><td><code>APIRuntime</code> &amp; <code>Agent</code></td><td>Shared runtime across multi-turn sessions via <code>agents.json</code></td><td>Clean lifecycle &amp; SQLite Alembic v10 migrations</td></tr>
+        <tr><td><code>@tool</code> &amp; <code>action_policy</code></td><td>READ_ONLY auto-approval vs write-tool <code>approval_callback</code></td><td>Enforced confirmation gate with <code>approval_id</code></td></tr>
+        <tr><td><code>output_type</code> Validation</td><td>Strict <code>NodeAuditSummary(BaseModel)</code> coercion</td><td>Validated JSON schema cleanly</td></tr>
+        <tr><td><code>status readiness</code></td><td><code>openminion config init --provider echo</code></td><td>8/8 checks passed (0 blocked)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>What We Learned (Actionable SDK Feedback)</h2>
+    <p class="sub" style="color:var(--text);">
+      1. <strong>Multi-step Internal Sub-calls:</strong> Single <code>Agent.run()</code> turns emit multiple HTTP requests (context composition, tool loop, formatting); test harnesses must inspect the current-turn message slice after the latest user turn.<br/>
+      2. <strong>Lazy Root Imports:</strong> <code>openminion/__init__.py</code> defers missing dependency errors (like <code>sqlalchemy</code>) until <code>Agent</code> access; adding a preflight check in <code>openminion doctor</code> helps onboarding.<br/>
+      3. <strong>Windows Stderr Logging:</strong> Default INFO logs go to <code>stderr</code>, which PowerShell strict pipelines treat as exceptions; supporting <code>--quiet</code> or JSON SDK logs would streamline CI/CD.
+    </p>
+  </div>
+</div>
+</body>
+</html>
